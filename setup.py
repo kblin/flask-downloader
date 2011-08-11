@@ -2,14 +2,14 @@
 Flask-Downloader
 ----------------
 
-Description goes here...
+Allow a Flask web app to download files on behalf of the user.
 
 Links
 `````
 
 * `documentation <http://packages.python.org/Flask-Downloader>`_
 * `development version
-  <http://github.com/USERNAME/REPOSITORY/zipball/master#egg=Flask-Downloader-dev>`_
+  <http://github.com/kblin/flask-downloader/zipball/master#egg=Flask-Downloader-dev>`_
 
 """
 from setuptools import setup
@@ -18,11 +18,11 @@ from setuptools import setup
 setup(
     name='Flask-Downloader',
     version='0.1',
-    url='<enter URL here>',
+    url='https://github.com/kblin/flask-downloader',
     license='BSD',
     author='Kai Blin',
-    author_email='your-email-here@example.com',
-    description='<enter short description here>',
+    author_email='kai@samba.org',
+    description='Allow a Flask web app to download files on behalf of the user.',
     long_description=__doc__,
     packages=['flaskext'],
     namespace_packages=['flaskext'],

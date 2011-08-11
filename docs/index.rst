@@ -1,20 +1,23 @@
-.. Flask-Downloader documentation master file, created by
-   sphinx-quickstart on Thu Aug 11 10:38:11 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Flask-Downloader
+================
 
-Welcome to Flask-Downloader's documentation!
-============================================
+.. module:: flaskext.downloader
 
-Contents:
+Flask-Downloader can download things off the internet on behalf of the user. The
+idea is to save the user the bandwidth required of manually downloading a file
+just to upload it to the webapp again.
 
-.. toctree::
-   :maxdepth: 2
+.. _Flask: http://flask.pocoo.org/
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Installation
+------------
+
+Install the extension with one of the following commands::
+
+    $ easy_install Flask-Downloader
+
+or alternatively if you have pip installed::
+
+    $ pip install Flask-Downloader
 
