@@ -12,6 +12,11 @@ import urllib
 import os.path
 from werkzeug import FileStorage
 
+class DownloaderError(Exception):
+    """Error raised by :class:`Downloader` if download failed.
+    """
+    pass
+
 class Downloader(object):
     """Download manager class for handling downloads in Flask
     """
@@ -48,4 +53,18 @@ class Downloader(object):
             return store
         except IOError:
             return None
+
+    def save(self, url, filename, dirname=None):
+        """Download the URL's contents, saving to a file.
+           Raises a :class:`DownloaderError` when download fails.
+        """
+        try:
+            if dirname is None:
+                dirname = self.app.config['DEFAULT_DOWNLOAD_DIR']
+            full_name = os.path.join(dirname, filename)
+            urllib.urlretrieve(url, full_name)
+        except IOError, e:
+            raise DownloaderError(unicode(e))
+        except urllib.ContentTooShortError, e:
+            raise DownloaderError(e.msg)
 

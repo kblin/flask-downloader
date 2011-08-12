@@ -4,10 +4,28 @@ from __future__ import with_statement
 import unittest
 import tempfile
 import shutil
+import os
 from os import path
 
 from flask import Flask
-from flaskext.downloader import Downloader
+from flaskext.downloader import Downloader, DownloaderError
+
+def assert_first_line(filename, expected):
+    """Assert the first line of a file is as expected
+    """
+    if not path.exists(filename):
+        raise AssertionError("File %r does not exist" % filename)
+
+    try:
+        handle = open(filename)
+    except IOError, e:
+        raise AssertionError("Opening %r failed: %s" % (filename, e))
+
+    line = handle.readline()
+    handle.close()
+
+    if line != expected:
+        raise AssertionError("line %r, expected %r" % (line, expected))
 
 class DownloaderTest(unittest.TestCase):
 
@@ -42,3 +60,27 @@ class DownloaderTest(unittest.TestCase):
         res = self.dl.download(path.join(
                         self.DEFAULT_DOWNLOAD_DIR,'invalid.txt'))
         assert res is None
+
+    def test_save(self):
+        """Test save function downloads and saves a file
+        """
+        test_file = path.join(self.DEFAULT_DOWNLOAD_DIR, 'test.txt')
+        assert not path.exists(test_file)
+        self.dl.save(self.tmp_name, 'test.txt')
+        assert_first_line(test_file, 'Test file\n')
+
+    def test_save_specified_dir(self):
+        """Test save function downloads file and saves it in a given directory
+        """
+        tmp_dir = tempfile.mkdtemp(dir=self.DEFAULT_DOWNLOAD_DIR)
+        test_file = path.join(tmp_dir, 'test.txt')
+        assert not path.exists(test_file)
+        self.dl.save(self.tmp_name, 'test.txt', tmp_dir)
+        assert_first_line(test_file, 'Test file\n')
+
+    def test_save_raises_downloader_error(self):
+        """Test save function raises a DownloaderError on error
+        """
+        invalid = path.join(self.DEFAULT_DOWNLOAD_DIR,'invalid.txt')
+        assert not os.path.exists(invalid)
+        self.assertRaises(DownloaderError, self.dl.save, invalid, 'test.txt')
