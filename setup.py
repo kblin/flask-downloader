@@ -17,7 +17,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Downloader',
-    version='0.1',
+    version='0.2',
     url='https://github.com/kblin/flask-downloader',
     license='BSD',
     author='Kai Blin',

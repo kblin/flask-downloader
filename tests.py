@@ -33,10 +33,18 @@ class DownloaderTest(unittest.TestCase):
 
     def setUp(self):
         self.DEFAULT_DOWNLOAD_DIR = tempfile.mkdtemp()
+        self.BAD_CONTENT = ('Error reading from remote server',
+                            'Test bad content')
         (fd, name) = tempfile.mkstemp(dir=self.DEFAULT_DOWNLOAD_DIR)
         os.write(fd, 'Test file\n')
         os.close(fd)
         self.tmp_name = name
+
+        (fd, name) = tempfile.mkstemp(dir=self.DEFAULT_DOWNLOAD_DIR)
+        os.write(fd, 'Test bad content\n')
+        os.close(fd)
+        self.bad_file = name
+
         self.app = Flask(__name__)
         self.app.config.from_object(self)
 
@@ -60,6 +68,20 @@ class DownloaderTest(unittest.TestCase):
         res = self.dl.download(path.join(
                         self.DEFAULT_DOWNLOAD_DIR,'invalid.txt'))
         assert res is None
+
+    def test_download_raises_download_error_on_bad_content(self):
+        """Test download function checks file for bad content
+        """
+        self.assertRaises(DownloaderError, self.dl.download, self.bad_file)
+        try:
+            self.dl.download(self.bad_file)
+            raise AssertionError('download() failed to raise an exception on bad content')
+        except DownloaderError, e:
+            self.assertEqual(str(e), "File contains bad content: 'Test bad content'")
+
+        self.app.config.pop('BAD_CONTENT')
+        res = self.dl.download(self.bad_file)
+        assert res is not None
 
     def test_save(self):
         """Test save function downloads and saves a file

@@ -11,6 +11,10 @@
 import urllib
 import os.path
 from werkzeug import FileStorage
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 class DownloaderError(Exception):
     """Error raised by :class:`Downloader` if download failed.
@@ -47,9 +51,17 @@ class Downloader(object):
             content_type = handle.headers.get('content-type',
                                 'application/octet-stream')
             content_length = handle.headers.get('content-length', -1)
+            headers = handle.headers
+            if 'BAD_CONTENT' in self.app.config:
+                handle = StringIO(handle.read())
+                for line in handle:
+                    for bad in self.app.config['BAD_CONTENT']:
+                        if bad in line:
+                            raise DownloaderError('File contains bad content: %r' % bad)
+                handle.seek(0)
             store = FileStorage(stream=handle, content_type=content_type,
                                 content_length=content_length,
-                                headers=handle.headers)
+                                headers=headers)
             return store
         except IOError:
             return None
